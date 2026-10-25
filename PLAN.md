@@ -124,7 +124,13 @@ Connect Stripe button in Settings. Buy button → Stripe Checkout on creator's a
 
 ### Step 9 — Automatic delivery
 After payment: email buyer (Resend) with a secure download link (expires in 7 days, max 5 downloads). Thank-you page with the download button.
+
+Also, from Step 2: connect Resend to Supabase as custom SMTP (Supabase → Authentication → Emails → SMTP Settings). That lifts Supabase's few-emails-per-hour limit and unlocks editing email templates. Then change the "Confirm signup" and "Reset password" templates to link to
+`{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next=/dashboard` and
+`{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery&next=/reset-password`.
+`/auth/confirm` already handles these links, which work in any browser. Supabase's default links only work in the browser where the person signed up or asked for the reset.
 ✅ Test: test purchase → email arrives → file downloads.
+✅ Test: sign up on a laptop, open the confirmation email on a phone, and it logs you in.
 
 ### Step 10 — Sales dashboard
 Creator sees orders, revenue, buyer emails.
