@@ -63,7 +63,7 @@ Users can also customize: background, button color, button shape (rounded / pill
 
 - `profiles` — id, username (unique), display_name, bio, avatar_url, theme settings (JSON), created_at
 - `blocks` — id, profile_id, type (link / social / product / header / text), data (JSON), position, is_visible
-- `products` — id, profile_id, title, description, price, currency, cover_url, file_path (private), is_active
+- `products` — id, profile_id, slug (unique per profile, used in `/username/product-slug`), title, description, price, currency, cover_url, file_path (private), is_active
 - `orders` — id, product_id, seller_id, buyer_email, amount, currency, stripe_payment_id, status, created_at
 - `download_tokens` — id, order_id, token, expires_at, download_count
 - `payment_accounts` — profile_id, stripe_account_id, stripe_connected (bool), paypal_merchant_id
@@ -90,6 +90,28 @@ Users can also customize: background, button color, button shape (rounded / pill
 
 ## 6. Build steps (one at a time — test, then commit to GitHub)
 
+### ▶ Current status (updated 2026-10-25)
+- **Done:** Step 1 (live on Vercel). Step 2 Part A: email/password sign up, log in, log out and forgot password all work on the live site.
+- **Paused:** Step 2 Part B, Google login. The code is saved on the Git branch `paused/google-login`. To resume, set up the Google OAuth client and enable Google in Supabase, then merge that branch into `main`.
+- **Paused:** all backend connections (Steps 3 and 5–13 talking to Supabase, Stripe, Resend and PayPal).
+- **Now:** the **Frontend phase** below. We build every main screen with sample data, then connect the backend screen by screen.
+
+### Frontend phase — all screens with sample data (no database, no payments)
+Rules for this phase:
+- Every screen gets its data only from the functions in `lib/data/`. For now those functions return sample data from `lib/sample-data.ts`. Later each one is switched to Supabase, and the screens don't change.
+- Data shapes in `lib/types.ts` match the database tables in section 4.
+- Mobile-first, following the design direction in section 3.
+
+Screens, one at a time, previewed by the owner before the next:
+- **F1** — Public creator page `/username`: photo, name, bio, social icons, links, product cards, "Made with" footer, theme applied, 404 for unknown usernames.
+- **F2** — Product page `/username/product-slug` with a Buy button (not working yet).
+- **F3** — Dashboard layout (desktop sidebar plus mobile bottom tabs) and the Page editor: add, edit, hide, delete and drag-reorder links, with a live phone preview.
+- **F4** — Theme picker: 6 presets plus custom background, button color, button shape and font.
+- **F5** — Store, Analytics and Settings dashboard screens.
+- **F6** — Landing page for the brand.
+
+Changes made in this phase only live in the browser. Nothing is saved until the backend is connected.
+
 ### Step 1 — Project setup
 Create Next.js + TypeScript + Tailwind + shadcn/ui project. Connect to GitHub. Deploy an empty page to Vercel.
 ✅ Test: the live Vercel link opens.
@@ -97,6 +119,7 @@ Create Next.js + TypeScript + Tailwind + shadcn/ui project. Connect to GitHub. D
 ### Step 2 — Supabase + login
 Create Supabase project, connect it. Sign up, log in, log out, forgot password (email + Google login).
 ✅ Test: create an account, log out, log back in.
+⏸ Google login is paused (see Current status).
 
 ### Step 3 — Username + profile
 After sign-up, user picks a unique username. Create the `profiles` table.
